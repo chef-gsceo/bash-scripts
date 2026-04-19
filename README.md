@@ -11,7 +11,7 @@ git clone https://github.com/chef-gsceo/bash-scripts.git
 
 Add to PATH:
 
-export PATH="$HOME/bash-scripts/:$PATH"
+export PATH="$HOME/bash-scripts/bin:$PATH"
 
 
 ## Utilities
@@ -28,10 +28,6 @@ Features:
 ### fnd
 
 Wrapper around grep with additional checks.
-
-Usage:
-
-fnd "pattern1|pattern2" /target/file
 
 
 ## Notes
