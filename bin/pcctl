@@ -81,6 +81,7 @@ ping_wait() {
                 sleep 0.3
 
                 done
+		printf " \n"
 }
 
 wake() {
