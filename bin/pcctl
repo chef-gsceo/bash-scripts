@@ -22,10 +22,10 @@ error() {
 usage() {
 
 	printf "[USAGE]:\n"
-	printf "\"pc init\" FOR wake up\n"
-	printf "\"pc sshinit\" FOR wake up + ssh\n"
-	printf "\"pc pull path/on/host path/on/client\" FOR rsync\n"
-	printf "\"pc\" FOR ssh\n"
+	printf "\"pc init\" 					-- wake up ${HOSTNAME}\n"
+	printf "\"pc sshinit\" 					-- wake up ${HOSTNAME} + ssh connection\n"
+	printf "\"pc pull path/on/${HOSTNAME} path/on/client\"  -- rsync files\n"
+	printf "\"pc\" 						-- ssh connection to ${HOSTNAME}\n"
 }
 
 
@@ -34,31 +34,48 @@ usage() {
 cmd_init() {
 
 	wake
+	ping_wait
 }
 
 cmd_sshinit() {
 
 	wake
+	ping_wait
 	ssh_connect
 }
 
 cmd_pull() {
 
-	if [ $# -lt 2 ]; then
-		error "not enough arguments"
+        if [ $# -lt 2 ]; then
+                error "not enough arguments"
+                usage
+                exit 1
+        fi
+
+        if ! ping -c 1 "$IP" >/dev/null 2>&1; then
+                error "${HOSTNAME} is not available"
+		info "Internet connection and ssh-access is required for RSYNC with ${HOSTNAME}"
 		usage
 		exit 1
-	fi
+        fi
 
-        local src="$1"
-        local dst="$2"
+
+        local from="$1"
+        local to="$2"
 
 	info "Starting RSYNC"
-	rsync -avz --progress "$SSH_NAME":"$src" "$dst"
+	rsync -avz --progress "$SSH_NAME":"$from" "$to"
 
 }
 
 cmd_sshdefault() {
+        if ! ping -c 1 "$IP" >/dev/null 2>&1; then
+                error "${HOSTNAME} is not available"
+                info "Internet connection and ssh-access is required for ssh-connection with ${HOSTNAME}"
+                usage
+                exit 1
+        fi
+
 	ssh_connect
 }
 
@@ -81,7 +98,9 @@ ping_wait() {
                 sleep 0.3
 
                 done
-		printf " \n"
+
+        info "${HOSTNAME} is online"
+	printf " \n"
 }
 
 wake() {
@@ -89,9 +108,6 @@ wake() {
         info "Sending magic packet to ${HOSTNAME}..."
         sleep 1
         info "Waking up ${HOSTNAME}..."
-	ping_wait
-        sleep 0.1
-        info "${HOSTNAME} is online"
 }
 
 ssh_connect() {
