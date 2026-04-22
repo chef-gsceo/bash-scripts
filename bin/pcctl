@@ -99,8 +99,8 @@ ping_wait() {
 
                 done
 
+        printf " \n"
         info "${HOSTNAME} is online"
-	printf " \n"
 }
 
 wake() {
