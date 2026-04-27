@@ -28,6 +28,42 @@ usage() {
 	printf "\"pc\" 						-- ssh connection to ${HOSTNAME}\n"
 }
 
+# shared
+
+ping_wait() {
+        printf "\r[WAIT] Initialisation ...."
+                while ! ping -c 1 "$IP" >/dev/null 2>&1; do
+                printf "\r\033[K[WAIT] Initialisation ."
+                sleep 0.3
+
+                printf "\r\033[K[WAIT] Initialisation .."
+                sleep 0.3
+
+                printf "\r\033[K[WAIT] Initialisation ..."
+                sleep 0.3
+
+                printf "\r\033[K[WAIT] Initialisation ...."
+                sleep 0.3
+
+                done
+
+        printf " \n"
+        info "${HOSTNAME} is online"
+}
+
+wake() {
+        wakeonlan "$MAC" >/dev/null 2>&1
+        info "Sending magic packet to ${HOSTNAME}..."
+        sleep 1
+        info "Waking up ${HOSTNAME}..."
+}
+
+ssh_connect() {
+	info "Connecting to ${HOSTNAME}..."
+	ssh "$SSH_NAME"
+}
+
+
 
 # COMMANDS
 
@@ -80,43 +116,7 @@ cmd_sshdefault() {
 }
 
 
-# shared
-
-ping_wait() {
-        printf "\r[WAIT] Initialisation ...."
-                while ! ping -c 1 "$IP" >/dev/null 2>&1; do
-                printf "\r\033[K[WAIT] Initialisation ."
-                sleep 0.3
-
-                printf "\r\033[K[WAIT] Initialisation .."
-                sleep 0.3
-
-                printf "\r\033[K[WAIT] Initialisation ..."
-                sleep 0.3
-
-                printf "\r\033[K[WAIT] Initialisation ...."
-                sleep 0.3
-
-                done
-
-        printf " \n"
-        info "${HOSTNAME} is online"
-}
-
-wake() {
-        wakeonlan "$MAC" >/dev/null 2>&1
-        info "Sending magic packet to ${HOSTNAME}..."
-        sleep 1
-        info "Waking up ${HOSTNAME}..."
-}
-
-ssh_connect() {
-	info "Connecting to ${HOSTNAME}..."
-	ssh "$SSH_NAME"
-}
-
-
-#main
+# main
 case "${1:-}" in
   init)
     cmd_init
