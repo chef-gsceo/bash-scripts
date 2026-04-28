@@ -64,7 +64,6 @@ ssh_connect() {
 }
 
 
-
 # COMMANDS
 
 cmd_init() {
