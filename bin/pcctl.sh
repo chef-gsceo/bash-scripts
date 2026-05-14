@@ -24,15 +24,27 @@ usage() {
 	printf "[USAGE]:\n"
 	printf "\"pc init\" 					-- wake up ${HOSTNAME}\n"
 	printf "\"pc sshinit\" 					-- wake up ${HOSTNAME} + ssh connection\n"
-	printf "\"pc pull path/on/${HOSTNAME} path/on/client\" 		-- rsync files\n"
+	printf "\"pc pull path/on/${HOSTNAME} path/on/client\" 	-- rsync files\n"
 	printf "\"pc\" 						-- ssh connection to ${HOSTNAME}\n"
 }
 
 # shared
 
 ping_wait() {
+
+        local timeout=40
+        local elapsed=0
+
         printf "\r[WAIT] Initialisation ...."
-                while ! ping -c 1 "$IP" >/dev/null 2>&1; do
+
+        while ! ping -c 1 "$IP" >/dev/null 2>&1; do
+
+                if [ "$elapsed" -ge "$timeout" ]; then
+                        printf "\n"
+                        error "Timeout waiting for ${HOSTNAME}"
+                        exit 1
+                fi
+
                 printf "\r\033[K[WAIT] Initialisation ."
                 sleep 0.3
 
@@ -45,9 +57,10 @@ ping_wait() {
                 printf "\r\033[K[WAIT] Initialisation ...."
                 sleep 0.3
 
+                elapsed=$((elapsed + 1))
                 done
 
-        printf " \n"
+        printf "\n"
         info "${HOSTNAME} is online"
 }
 
@@ -68,21 +81,33 @@ ssh_connect() {
 
 cmd_init() {
 
-	wake
-	ping_wait
+        info "Ping check..."
+        if ! ping -c 1 "$IP" >/dev/null 2>&1; then
+	        wake
+	        ping_wait
+        else
+                error "${HOSTNAME} is already online"
+                exit 1
+        fi
+
 }
 
 cmd_sshinit() {
-
-	wake
-	ping_wait
-	ssh_connect
+        info "Ping check..."
+        if ! ping -c 1 "$IP" >/dev/null 2>&1; then
+        	wake
+	        ping_wait
+	        ssh_connect
+        else
+                info "${HOSTNAME} is already online"
+                ssh_connect
+        fi
 }
 
 cmd_pull() {
 
         if [ $# -lt 2 ]; then
-                error "not enough arguments"
+                error "Not enough arguments"
                 usage
                 exit 1
         fi
