@@ -66,7 +66,7 @@ ping_wait() {
 
 wake() {
         wakeonlan "$MAC" >/dev/null 2>&1
-        info "Sending magic packet to ${HOSTNAME}..."
+        info "Sending magic package to ${HOSTNAME}..."
         sleep 1
         info "Waking up ${HOSTNAME}..."
 }
@@ -115,7 +115,6 @@ cmd_pull() {
         if ! ping -c 1 "$IP" >/dev/null 2>&1; then
                 error "${HOSTNAME} is not available"
 		info "Internet connection and ssh-access is required for RSYNC with ${HOSTNAME}"
-		usage
 		exit 1
         fi
 
@@ -132,7 +131,6 @@ cmd_sshdefault() {
         if ! ping -c 1 "$IP" >/dev/null 2>&1; then
                 error "${HOSTNAME} is not available"
                 info "Internet connection and ssh-access is required for ssh-connection with ${HOSTNAME}"
-                usage
                 exit 1
         fi
 
