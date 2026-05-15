@@ -28,6 +28,7 @@ usage() {
 	printf "\"pc\" 						-- ssh connection to ${HOSTNAME}\n"
 }
 
+
 # shared
 
 ping_wait() {
@@ -37,7 +38,7 @@ ping_wait() {
 
         printf "\r[WAIT] Initialisation ...."
 
-        while ! ping -c 1 "$IP" >/dev/null 2>&1; do
+        while ! ping -c 1 -W 1 "$IP" >/dev/null 2>&1; do
 
                 if [ "$elapsed" -ge "$timeout" ]; then
                         printf "\n"
@@ -65,6 +66,7 @@ ping_wait() {
 }
 
 wake() {
+
         wakeonlan "$MAC" >/dev/null 2>&1
         info "Sending magic package to ${HOSTNAME}..."
         sleep 1
@@ -72,6 +74,7 @@ wake() {
 }
 
 ssh_connect() {
+
 	info "Connecting to ${HOSTNAME}..."
 	ssh "$SSH_NAME"
 }
@@ -82,7 +85,7 @@ ssh_connect() {
 cmd_init() {
 
         info "Ping check..."
-        if ! ping -c 1 "$IP" >/dev/null 2>&1; then
+        if ! ping -c 1 -W 1 "$IP" >/dev/null 2>&1; then
 	        wake
 	        ping_wait
         else
@@ -93,8 +96,9 @@ cmd_init() {
 }
 
 cmd_sshinit() {
+
         info "Ping check..."
-        if ! ping -c 1 "$IP" >/dev/null 2>&1; then
+        if ! ping -c 1 -W 1 "$IP" >/dev/null 2>&1; then
         	wake
 	        ping_wait
 	        ssh_connect
@@ -111,10 +115,10 @@ cmd_pull() {
                 usage
                 exit 1
         fi
-
-        if ! ping -c 1 "$IP" >/dev/null 2>&1; then
+        info "Ping check..."
+        if ! ping -c 1 -W 1 "$IP" >/dev/null 2>&1; then
                 error "${HOSTNAME} is not available"
-		info "Internet connection and ssh-access is required for RSYNC with ${HOSTNAME}"
+		info "Internet connection and ssh-access is required for RSYNC to ${HOSTNAME}"
 		exit 1
         fi
 
@@ -128,9 +132,10 @@ cmd_pull() {
 }
 
 cmd_sshdefault() {
-        if ! ping -c 1 "$IP" >/dev/null 2>&1; then
+        info "Ping check..."
+        if ! ping -c 1 -W 1 "$IP" >/dev/null 2>&1; then
                 error "${HOSTNAME} is not available"
-                info "Internet connection and ssh-access is required for ssh-connection with ${HOSTNAME}"
+                info "Internet connection and ssh-access is required for ssh-connection to ${HOSTNAME}"
                 exit 1
         fi
 
@@ -159,4 +164,3 @@ case "${1:-}" in
     exit 1
     ;;
 esac
-
