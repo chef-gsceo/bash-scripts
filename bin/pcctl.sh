@@ -38,7 +38,7 @@ ping_wait() {
 
         printf "\r[WAIT] Initialisation ...."
 
-        while ! ping -c 1 -W 1 "$IP" >/dev/null 2>&1; do
+        while ! ping -c 3 -W 1 "$IP" >/dev/null 2>&1; do
 
                 if [ "$elapsed" -ge "$timeout" ]; then
                         printf "\n"
@@ -85,7 +85,7 @@ ssh_connect() {
 cmd_init() {
 
         info "Ping check..."
-        if ! ping -c 1 -W 1 "$IP" >/dev/null 2>&1; then
+        if ! ping -c 3 -W 1 "$IP" >/dev/null 2>&1; then
 	        wake
 	        ping_wait
         else
@@ -98,7 +98,7 @@ cmd_init() {
 cmd_sshinit() {
 
         info "Ping check..."
-        if ! ping -c 1 -W 1 "$IP" >/dev/null 2>&1; then
+        if ! ping -c 3 -W 1 "$IP" >/dev/null 2>&1; then
         	wake
 	        ping_wait
 	        ssh_connect
@@ -116,7 +116,7 @@ cmd_pull() {
                 exit 1
         fi
         info "Ping check..."
-        if ! ping -c 1 -W 1 "$IP" >/dev/null 2>&1; then
+        if ! ping -c 3 -W 1 "$IP" >/dev/null 2>&1; then
                 error "${HOSTNAME} is not available"
 		info "Internet connection and ssh-access is required for RSYNC to ${HOSTNAME}"
 		exit 1
@@ -133,7 +133,7 @@ cmd_pull() {
 
 cmd_sshdefault() {
         info "Ping check..."
-        if ! ping -c 1 -W 1 "$IP" >/dev/null 2>&1; then
+        if ! ping -c 3 -W 1 "$IP" >/dev/null 2>&1; then
                 error "${HOSTNAME} is not available"
                 info "Internet connection and ssh-access is required for ssh-connection to ${HOSTNAME}"
                 exit 1
